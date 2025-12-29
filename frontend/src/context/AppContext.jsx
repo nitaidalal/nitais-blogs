@@ -12,23 +12,11 @@ export const AppProvider = ({children}) => {
   const navigate = useNavigate();
   const [token, setToken] = useState(null);
   const [user, setUser] = useState(null);
-  const [blogs, setBlogs] = useState([]);
   const [searchInput, setSearchInput] = useState("");
   const [isAuthLoading, setIsAuthLoading] = useState(true);
   const [loading, setLoading] = useState(false);
   
-  const fetchBlogs = async () => {
-    try {
-      setLoading(true);
-      const { data } = await axios.get("/user/view-all");
-      setBlogs(data.data);
-    } catch (error) {
-      toast.error(error.response.data.message || "Error fetching blogs");
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  
   // --------------------------
   //  Token Validation Helper
   // --------------------------
@@ -49,7 +37,6 @@ export const AppProvider = ({children}) => {
     setIsAuthLoading(true);
     const savedToken = localStorage.getItem("token");
     const savedUser = localStorage.getItem("user");
-    fetchBlogs();
 
     if (isTokenValid(savedToken)) {
       setToken(savedToken);
@@ -84,12 +71,10 @@ export const AppProvider = ({children}) => {
     user,
     setUser,
     isTokenValid,
-    blogs,
-    setBlogs,
     searchInput,
     setSearchInput,
     isAuthLoading,
-    loading
+    loading,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
