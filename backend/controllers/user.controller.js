@@ -54,11 +54,55 @@ export const updateUserProfile = async (req, res) => {
 
 export const viewAllBlogs = async (req,res) => {
     try {
-        const blogs = await Blog.find({isPublished: true}).sort({createdAt: -1});
-        if(blogs.length === 0){
-            return res.status(404).json({success:false, message: "No blogs posted yet"});
+        // Pagination parameters from query string
+        const page = parseInt(req.query.page) || 1; // default page 1
+        const limit = parseInt(req.query.limit) || 8; // default 8 blogs per page
+        const category = req.query.category || ''; // filter by category
+        const search = req.query.search || ''; // search query
+
+        // Calculate skip value for pagination
+        const skip = (page - 1) * limit;
+
+        // Build query object
+        let query = { isPublished: true };
+        
+        // Add category filter if provided and not 'all'
+        if (category && category !== 'all') {
+            query.category = new RegExp(category, 'i'); // case-insensitive match
         }
-        res.status(200).json({success:true, data: blogs});
+
+        // Add search filter if provided
+        if (search) {
+            query.$or = [
+                { title: new RegExp(search, 'i') },
+                { category: new RegExp(search, 'i') }
+            ];
+        }
+
+        // Get total count for pagination metadata
+        const totalBlogs = await Blog.countDocuments(query);
+        
+        // Fetch paginated blogs
+        const blogs = await Blog.find(query)
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        // Calculate total pages
+        const totalPages = Math.ceil(totalBlogs / limit);
+
+        res.status(200).json({
+            success: true,
+            data: blogs,
+            pagination: {
+                currentPage: page,
+                totalPages: totalPages,
+                totalBlogs: totalBlogs,
+                blogsPerPage: limit,
+                hasNextPage: page < totalPages,
+                hasPrevPage: page > 1
+            }
+        });
     } catch (error) {
         console.error("Error fetching blogs:", error);
         res.status(500).json({ success: false, message: error.message });
