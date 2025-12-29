@@ -1,17 +1,36 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import { useAppContext } from '../context/AppContext'
 import BlogCard from './BlogCard';
 import { ArrowBigRightIcon, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
+import toast from 'react-hot-toast';
 
 const HomeBlogs = () => {
-    const {blogs} = useAppContext();
+    const { axios } = useAppContext();
+    const [blogs, setBlogs] = useState([]);
+
+    useEffect(() => {
+        const fetchLatestBlogs = async () => {
+            try {
+                const { data } = await axios.get('/user/view-all', {
+                    params: {
+                        page: 1,
+                        limit: 4 // Only fetch 4 latest blogs for home page
+                    }
+                });
+                setBlogs(data.data);
+            } catch (error) {
+                toast.error(error.response?.data?.message || "Error fetching blogs");
+            }
+        };
+        fetchLatestBlogs();
+    }, []);
 
 return (
   <div className="max-w-full ">
     <h1 className="text-3xl font-bold text-center mt-10 mb-5">Latest Blogs</h1>
     <div className="grid grid-cols-1  sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 mb-10  mt-10 gap-16 flex-wrap mx-auto  xl:mx-40">
-      {blogs.slice(0, 4).map((blog) => (
+      {blogs.map((blog) => (
         <motion.div
           key={blog._id}
           initial={{ opacity: 0, y: 30 }}
