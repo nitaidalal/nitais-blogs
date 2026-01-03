@@ -1,21 +1,22 @@
-import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FaHome } from "react-icons/fa";
 import { motion } from "framer-motion";
-import toast from "react-hot-toast";
 import { useAppContext } from "../context/AppContext";
 
 const NotFound = () => {
-  const {navigate,user} = useAppContext();
+  const {navigate} = useAppContext();
   const location = useLocation();
 
   const backToHome = () => {
     if(location.pathname.startsWith('/admin')){
-      navigate('/admin');
+      navigate('/admin/dashboard');
+      
     } else {
       navigate('/');
     }
   }
+
+  const buttonContent = location.pathname.startsWith('/admin') ? 'Go to Dashboard' : 'Back to Home';
 
   return (
     <div className="mb-10 flex flex-col items-center justify-center h-screen bg-linear-to-b from-blue-50 to-white text-center px-6">
@@ -68,9 +69,9 @@ const NotFound = () => {
         onClick={backToHome}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className="mt-10 flex items-center gap-2 bg-linear-to-r from-orange-500 to-yellow-600 text-white px-8 py-3 rounded-full shadow-md hover:shadow-lg hover:opacity-90 transition-all duration-200"
+        className="mt-10 flex items-center gap-2 cursor-pointer bg-linear-to-r from-orange-500 to-yellow-600 text-white px-8 py-3 rounded-full shadow-md hover:shadow-lg hover:opacity-90 transition-all duration-200"
       >
-        <FaHome /> Back to Home
+        <FaHome /> {buttonContent}
       </motion.button>
     </div>
   );
