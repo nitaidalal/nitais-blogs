@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 const Table = ({ blog, fetchBlogs, index }) => {
-  const { axios, setBlogs } = useAppContext();
+  const { axios } = useAppContext();
   const navigate = useNavigate();
   const [published, setPublished] = useState(blog.isPublished);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -43,8 +43,7 @@ const Table = ({ blog, fetchBlogs, index }) => {
       setIsDeleting(true);
       const { data } = await axios.delete(`/admin/deleteBlog/${blog._id}`);
       toast.success(data.message);
-      setBlogs((prev) => prev.filter((b) => b._id !== blog._id));
-      fetchBlogs();
+      fetchBlogs(); // Re-fetch blogs to update the UI
     } catch (error) {
       toast.error(error.response?.data?.message || "Error deleting blog");
     } finally {
