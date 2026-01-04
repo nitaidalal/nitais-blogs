@@ -52,7 +52,7 @@ const BlogCard = ({ blog }) => {
     <>
       <div
         onClick={() => navigate(`/blog/${_id}`)}
-        className=" max-w-64 h-[370px] border border-gray-200 rounded-lg relative overflow-hidden cursor-pointer hover:shadow-lg hover:scale-105 transition-all duration-200 "
+        className=" max-w-64 h-[370px] border border-gray-200 rounded-lg relative overflow-hidden cursor-pointer hover:shadow-[0_10px_30px_rgba(236,72,153,0.3)] hover:scale-105 transition-all duration-200 "
       >
         <img
           src={image}
@@ -62,27 +62,27 @@ const BlogCard = ({ blog }) => {
         <div className="flex justify-between items-center px-3 flex-wrap gap-2">
           <button
             onClick={handleLike}
-            
             disabled={isLiking}
             className="flex items-center gap-1 text-sm hover:scale-110 transition-all duration-150 disabled:opacity-50"
             title={token ? (hasLiked ? "Unlike" : "Like") : "Login to like"}
           >
-            <FaHeart className={`${hasLiked ? "text-red-500" : "text-gray-400"}`} />
+            <FaHeart
+              className={`${hasLiked ? "text-red-500" : "text-gray-400"}`}
+            />
             <span className="text-gray-700 font-medium">{likeCount}</span>
           </button>
-          
-          <p className="text-xs px-3 py-1 bg-primary rounded-full text-white">
-            {Moment().diff(Moment(blog.createdAt), "hours") < 24 
+
+          <p className="text-xs px-3 py-1 bg-primary rounded-full text-white shadow-md">
+            {Moment().diff(Moment(blog.createdAt), "hours") < 24
               ? Moment(blog.createdAt).fromNow()
               : Moment(blog.createdAt).format("MMMM Do, YYYY")}
           </p>
-          <motion.p 
-          //infiite blinking animation
-          animate={{ opacity: [1, 0.5, 1] }}
-          transition={{ duration: 2, repeat: Infinity }}
-
-          
-          className=" px-3 py-1 inline bg-blue-100 rounded-full text-black absolute top-2 right-1 text-xs ">
+          <motion.p
+            //infiite blinking animation
+            animate={{ opacity: [1, 0.5, 1] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            className=" px-3 py-1 shadow-[10px_10px_30px_rgba(236,72,153,0.8)]  inline bg-pink-100 border border-pink-400 rounded-full text-black absolute top-2 right-1 text-xs  "
+          >
             {category
               .split(" ")
               .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
