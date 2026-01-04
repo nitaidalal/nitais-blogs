@@ -2,6 +2,7 @@ import { FaBook, FaComments, FaLightbulb, FaRocket, FaGithub, FaLinkedin, FaTwit
 import {Link} from 'react-router-dom';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import {motion} from 'framer-motion';
 
 const About = () => {
     const location = useLocation();
@@ -31,38 +32,73 @@ const About = () => {
 
     return (
       <div className="bg-linear-to-br from-gray-50 to-gray-100 min-h-screen py-12 px-4">
-        <div className="max-w-6xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          className="max-w-6xl mx-auto"
+        >
           {/* Hero Section */}
-          <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 mb-8">
-            <h1 className="text-4xl md:text-5xl font-bold text-center bg-linear-to-r from-primary to-purple-600 bg-clip-text text-transparent mb-6">
+          <motion.div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 mb-8">
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="text-4xl md:text-5xl leading-relaxed font-bold text-center bg-linear-to-r from-primary to-purple-600 bg-clip-text text-transparent mb-3"
+            >
               Welcome to My Blog
-            </h1>
-            <p className="text-gray-700 text-lg leading-relaxed mb-6 text-center max-w-3xl mx-auto">
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3, duration: 0.4 }}
+              className="text-gray-700 text-lg leading-relaxed mb-6 text-center max-w-3xl mx-auto"
+            >
               This is a platform where I share my journey in software
               development. Whether you're a beginner learning to code or an
               experienced developer looking for insights, you'll find helpful
               content, tutorials, and real-world solutions here.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center mt-8">
-              <div className="p-4 bg-blue-50 rounded-lg">
+            </motion.p>
+            <motion.div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center mt-8">
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="p-4 bg-blue-50 rounded-lg"
+              >
                 <p className="text-3xl">📚</p>
                 <p className="text-gray-800 font-semibold mb-1">Learn</p>
                 <p className="text-gray-600 text-sm">Step-by-step tutorials</p>
-              </div>
-              <div className="p-4 bg-purple-50 rounded-lg">
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+                className="p-4 bg-purple-50 rounded-lg"
+              >
                 <p className="text-3xl">💡</p>
                 <p className="text-gray-800 font-semibold mb-1">Discover</p>
                 <p className="text-gray-600 text-sm">Tips & best practices</p>
-              </div>
-              <div className="p-4 bg-green-50 rounded-lg">
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.7 }}
+                className="p-4 bg-green-50 rounded-lg"
+              >
                 <p className="text-3xl">🚀</p>
                 <p className="text-gray-800 font-semibold mb-1">Build</p>
                 <p className="text-gray-600 text-sm">Real-world projects</p>
-              </div>
-            </div>
-          </div>
+              </motion.div>
+            </motion.div>
+          </motion.div>
           {/* What You'll Find Section */}
-          <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12 mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="bg-white rounded-2xl shadow-xl p-8 md:p-12 mb-8"
+          >
             <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
               What You'll Find Here
             </h2>
@@ -84,10 +120,17 @@ const About = () => {
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
 
           {/* Author Section - Enhanced */}
-        <div id="meet-nitai" className="bg-white rounded-2xl shadow-xl overflow-hidden mb-8">
+          <motion.div
+            // initial={{ opacity: 0, y: 20 }}
+            // whileInView={{ opacity: 1, y: 0 }}
+            // viewport={{ once: true }}
+            // transition={{ duration: 0.6 }}
+            id="meet-nitai"
+            className="bg-white rounded-2xl shadow-xl overflow-hidden mb-8"
+          >
             {/* Header with linear */}
             <div className="bg-linear-to-br from-primary to-green-600 text-white p-8 md:p-12 text-center relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32"></div>
@@ -161,13 +204,17 @@ const About = () => {
                           "HTML5",
                           "CSS3",
                           "Vite",
-                        ].map((tech) => (
-                          <span
+                        ].map((tech, index) => (
+                          <motion.span
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            whileInView={{ scale: 1, opacity: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.3, delay: index * 0.2 }}
                             key={tech}
                             className="px-3 py-1 bg-white text-blue-600 rounded-full text-sm font-medium shadow-sm border border-blue-200"
                           >
                             {tech}
-                          </span>
+                          </motion.span>
                         ))}
                       </div>
                     </div>
@@ -182,13 +229,17 @@ const About = () => {
                           "MongoDB",
                           "REST APIs",
                           "JWT",
-                        ].map((tech) => (
-                          <span
+                        ].map((tech, index) => (
+                          <motion.span
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            whileInView={{ scale: 1, opacity: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.3, delay: index * 0.2 }}
                             key={tech}
                             className="px-3 py-1 bg-white text-green-600 rounded-full text-sm font-medium shadow-sm border border-green-200"
                           >
                             {tech}
-                          </span>
+                          </motion.span>
                         ))}
                       </div>
                     </div>
@@ -197,14 +248,20 @@ const About = () => {
                         Tools & Services
                       </h4>
                       <div className="flex flex-wrap gap-2">
-                        {["Git", "GitHub", "Postman", "VS Code"].map((tech) => (
-                          <span
-                            key={tech}
-                            className="px-3 py-1 bg-white text-purple-600 rounded-full text-sm font-medium shadow-sm border border-purple-200"
-                          >
-                            {tech}
-                          </span>
-                        ))}
+                        {["Git", "GitHub", "Postman", "VS Code"].map(
+                          (tech, index) => (
+                            <motion.span
+                              initial={{ scale: 0.8, opacity: 0 }}
+                              whileInView={{ scale: 1, opacity: 1 }}
+                              viewport={{ once: true }}
+                              transition={{ duration: 0.3, delay: index * 0.2 }}
+                              key={tech}
+                              className="px-3 py-1 bg-white text-purple-600 rounded-full text-sm font-medium shadow-sm border border-purple-200"
+                            >
+                              {tech}
+                            </motion.span>
+                          )
+                        )}
                       </div>
                     </div>
                     <div>
@@ -218,13 +275,17 @@ const About = () => {
                           "Docker",
                           "AWS",
                           "GraphQL",
-                        ].map((tech) => (
-                          <span
+                        ].map((tech,index) => (
+                          <motion.span
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            whileInView={{ scale: 1, opacity: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.3, delay: index * 0.2 }}
                             key={tech}
                             className="px-3 py-1 bg-white text-orange-600 rounded-full text-sm font-medium shadow-sm border border-orange-200"
                           >
                             {tech}
-                          </span>
+                          </motion.span>
                         ))}
                       </div>
                     </div>
@@ -349,7 +410,7 @@ const About = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Call to Action */}
 
@@ -364,7 +425,7 @@ const About = () => {
               Explore Blogs
             </Link>
           </div>
-        </div>
+        </motion.div>
       </div>
     );
 };
