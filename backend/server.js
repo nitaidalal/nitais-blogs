@@ -20,7 +20,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
-  res.send('Hello, World!');
+  res.send("Welcome to Nitai's Blogs");
 });
 
 app.use('/api/admin', adminRouter);
