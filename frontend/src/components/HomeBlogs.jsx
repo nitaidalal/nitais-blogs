@@ -4,10 +4,8 @@ import BlogCard from './BlogCard';
 import { ArrowBigRightIcon, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import toast from 'react-hot-toast';
-import Loader from './Loader';
-
 const HomeBlogs = () => {
-    const { axios } = useAppContext();
+    const { axios,navigate } = useAppContext();
     const [blogs, setBlogs] = useState([]);
     const [isLoading,setIsLoading] = useState(false);
 
@@ -66,7 +64,7 @@ return (
         <div className="text-center mb-10">
           <button
             className="bg-primary text-white px-3 py-1.5 rounded cursor-pointer  hover:shadow-[0_0_35px_rgba(59,130,246,1)] active:scale-95 transition-all duration-150"
-            onClick={() => (window.location.href = "/blogs")}
+            onClick={() => navigate("/blogs")}
           >
             View All Blogs
             <ArrowRight className="inline-block ml-2" />
