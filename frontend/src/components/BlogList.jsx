@@ -107,9 +107,9 @@ const BlogList = () => {
 
   return (
     <div>
-      {loading && (
+      {loading ? (
         <Loader />
-      )} 
+      ):(
           <div>
             <h1 className="text-4xl my-8 font-semibold text-primary text-center">
               All Blogs
@@ -261,8 +261,8 @@ const BlogList = () => {
               </div>
             )}
           </div>
-        
-      )
+      )}
+      
     </div>
   );
 }
