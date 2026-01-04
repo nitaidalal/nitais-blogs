@@ -7,7 +7,7 @@ const Header = () => {
 
   return (
     <div className="mx-8 sm:mx-16 xl:mx-24 relative mt-10">
-      <div className="flex gap-8 flex-col-reverse sm:flex-row justify-between items-center py-16">
+      <div className="flex gap-8 flex-col-reverse sm:flex-row justify-between items-center sm:py-16">
         <div className="flex-1 text-center sm:text-left">
           {/* Welcome Badge */}
           <motion.div
