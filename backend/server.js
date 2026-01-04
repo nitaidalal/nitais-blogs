@@ -15,7 +15,7 @@ connectDB();
 
 // CORS configuration
 const corsOptions = {
-  origin: process.env.FRONTEND_URL || "https://nitais-blogs.vercel.app/",
+  origin: process.env.FRONTEND_URL || "https://nitais-blogs.vercel.app",
   credentials: true,
   optionsSuccessStatus: 200,
 };
