@@ -9,8 +9,23 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// Verify transporter configuration
+transporter.verify(function (error, success) {
+  if (error) {
+    console.error("Email transporter verification failed:", error);
+  } else {
+    console.log("Email server is ready to send messages");
+  }
+});
+
 // Send welcome email when user subscribes
 export const sendWelcomeEmail = async (email, name, unsubscribeToken) => {
+  try {
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.error("Email credentials not configured");
+      return;
+    }
+
     const allBlogsUrl = `${process.env.FRONTEND_URL}/blogs`;
   const mailOptions = {
     from: `"Nitai's Blogs" <${process.env.EMAIL_USER}>`,
@@ -124,12 +139,25 @@ export const sendWelcomeEmail = async (email, name, unsubscribeToken) => {
       `,
   };
 
-  await transporter.sendMail(mailOptions);
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Welcome email sent successfully to:", email, "Message ID:", info.messageId);
+    return info;
+  } catch (error) {
+    console.error("Failed to send welcome email to:", email, "Error:", error.message);
+    throw error;
+  }
 };
 
 // Send new blog notification to all subscribers
 export const sendNewBlogEmail = async (email, name, blogTitle, blogId, unsubscribeToken) => {
-  const blogUrl = `${process.env.FRONTEND_URL}/blog/${blogId}`;
+  try {
+    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+      console.error("Email credentials not configured");
+      return;
+    }
+
+    const blogUrl = `${process.env.FRONTEND_URL}/blog/${blogId}`;
 
   const mailOptions = {
     from: `"Nitai's Blogs" <${process.env.EMAIL_USER}>`,
@@ -246,7 +274,14 @@ export const sendNewBlogEmail = async (email, name, blogTitle, blogId, unsubscri
     `,
   };
 
-  await transporter.sendMail(mailOptions);
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log("New blog email sent successfully to:", email, "Message ID:", info.messageId);
+    return info;
+  } catch (error) {
+    console.error("Failed to send new blog email to:", email, "Error:", error.message);
+    throw error;
+  }
 };
 
 export default transporter;
