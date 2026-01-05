@@ -26,16 +26,9 @@ export const subscribe = async (req, res) => {
 
         if (existing) {
             if (existing.isSubscribed) {
-                // return res.status(400).json({ 
-                //     success: false, 
-                //     message: 'Already subscribed!' 
-                // });
-                
-                const unsubscribeToken = generateUnsubscribeToken(existing);
-                await sendWelcomeEmail(user.email, user.name, unsubscribeToken);
-                return res.status(200).json({
-                  success: true,
-                  message: "Welcome back! Subscription reactivated.",
+                return res.status(400).json({ 
+                    success: false, 
+                    message: 'Already subscribed!' 
                 });
             } else {
                 // Reactivate subscription 
@@ -44,7 +37,10 @@ export const subscribe = async (req, res) => {
                 existing.unsubscribedAt = null;
                 await existing.save();
 
-                await sendWelcomeEmail(user.email, user.name, unsubscribedToken);
+                // Send welcome email (non-blocking)
+                sendWelcomeEmail(user.email, user.name, unsubscribedToken).catch(err => {
+                    console.error('Failed to send welcome email:', err);
+                });
 
                 return res.status(200).json({ 
                     success: true, 
@@ -62,8 +58,11 @@ export const subscribe = async (req, res) => {
 
         await newSubscriber.save();
         const unsubscribeToken = generateUnsubscribeToken(newSubscriber);
-        // Send welcome email
-        await sendWelcomeEmail(user.email, user.name, unsubscribeToken);
+        
+        // Send welcome email (non-blocking)
+        sendWelcomeEmail(user.email, user.name, unsubscribeToken).catch(err => {
+            console.error('Failed to send welcome email:', err);
+        });
 
         res.status(201).json({ 
             success: true, 
