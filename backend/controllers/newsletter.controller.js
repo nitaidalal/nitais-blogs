@@ -49,7 +49,7 @@ export const subscribe = async (req, res) => {
             }
         }
 
-        // Create new subscription
+        // Create new subscription for new subscriber
         const newSubscriber = await Subscriber.create({
             user: user.id,
             email: user.email,
