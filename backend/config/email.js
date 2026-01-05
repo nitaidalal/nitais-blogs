@@ -25,7 +25,6 @@ export const sendWelcomeEmail = async (email, name, unsubscribeToken) => {
       console.error("Email credentials not configured");
       return;
     }
-
     const allBlogsUrl = `${process.env.FRONTEND_URL}/blogs`;
   const mailOptions = {
     from: `"Nitai's Blogs" <${process.env.EMAIL_USER}>`,
@@ -139,7 +138,6 @@ export const sendWelcomeEmail = async (email, name, unsubscribeToken) => {
       `,
   };
 
-  try {
     const info = await transporter.sendMail(mailOptions);
     console.log("Welcome email sent successfully to:", email, "Message ID:", info.messageId);
     return info;
@@ -156,8 +154,7 @@ export const sendNewBlogEmail = async (email, name, blogTitle, blogId, unsubscri
       console.error("Email credentials not configured");
       return;
     }
-
-    const blogUrl = `${process.env.FRONTEND_URL}/blog/${blogId}`;
+  const blogUrl = `${process.env.FRONTEND_URL}/blog/${blogId}`;
 
   const mailOptions = {
     from: `"Nitai's Blogs" <${process.env.EMAIL_USER}>`,
@@ -274,7 +271,6 @@ export const sendNewBlogEmail = async (email, name, blogTitle, blogId, unsubscri
     `,
   };
 
-  try {
     const info = await transporter.sendMail(mailOptions);
     console.log("New blog email sent successfully to:", email, "Message ID:", info.messageId);
     return info;
