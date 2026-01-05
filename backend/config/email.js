@@ -143,7 +143,8 @@ export const sendWelcomeEmail = async (email, name, unsubscribeToken) => {
     return info;
   } catch (error) {
     console.error("Failed to send welcome email to:", email, "Error:", error.message);
-    throw error;
+    // Don't throw error - let subscription succeed even if email fails
+    return null;
   }
 };
 
@@ -276,7 +277,8 @@ export const sendNewBlogEmail = async (email, name, blogTitle, blogId, unsubscri
     return info;
   } catch (error) {
     console.error("Failed to send new blog email to:", email, "Error:", error.message);
-    throw error;
+    // Don't throw error - let blog publishing succeed even if email fails
+    return null;
   }
 };
 
