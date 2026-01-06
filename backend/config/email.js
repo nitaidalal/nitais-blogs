@@ -5,21 +5,52 @@ const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 587,
   secure: false, // true for 465, false for other ports
-  requireTLS: true, //
+  requireTLS: true,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
-  }
+  },
+  // Production-friendly settings
+  connectionTimeout: 10000, // 10 seconds
+  greetingTimeout: 10000,
+  socketTimeout: 10000,
+  // Pool settings for better performance
+  pool: true,
+  maxConnections: 5,
+  maxMessages: 10,
+  rateDelta: 1000,
+  rateLimit: 5
 });
 
-// Verify transporter configuration
-transporter.verify(function (error, success) {
-  if (error) {
-    console.error("Email transporter verification failed:", error);
-  } else {
-    console.log("Email server is ready to send messages");
+// Remove immediate verification - verify only when sending
+// This prevents startup errors in production environments
+
+// Helper function to send email with retry logic
+const sendEmailWithRetry = async (mailOptions, maxRetries = 3) => {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      // Verify connection before sending (lazy verification)
+      if (attempt === 1) {
+        await transporter.verify();
+      }
+      
+      const info = await transporter.sendMail(mailOptions);
+      console.log(`Email sent successfully on attempt ${attempt}. Message ID:`, info.messageId);
+      return info;
+    } catch (error) {
+      console.error(`Email sending attempt ${attempt}/${maxRetries} failed:`, error.message);
+      
+      if (attempt === maxRetries) {
+        throw error;
+      }
+      
+      // Wait before retrying (exponential backoff)
+      const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
+      console.log(`Retrying in ${delay}ms...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
   }
-});
+};
 
 // Send welcome email when user subscribes
 export const sendWelcomeEmail = async (email, name, unsubscribeToken) => {
@@ -141,8 +172,8 @@ export const sendWelcomeEmail = async (email, name, unsubscribeToken) => {
       `,
   };
 
-    const info = await transporter.sendMail(mailOptions);
-    console.log("Welcome email sent successfully to:", email, "Message ID:", info.messageId);
+    const info = await sendEmailWithRetry(mailOptions);
+    console.log("Welcome email sent successfully to:", email);
     return info;
   } catch (error) {
     console.error("Failed to send welcome email to:", email, "Error:", error.message);
@@ -275,8 +306,8 @@ export const sendNewBlogEmail = async (email, name, blogTitle, blogId, unsubscri
     `,
   };
 
-    const info = await transporter.sendMail(mailOptions);
-    console.log("New blog email sent successfully to:", email, "Message ID:", info.messageId);
+    const info = await sendEmailWithRetry(mailOptions);
+    console.log("New blog email sent successfully to:", email);
     return info;
   } catch (error) {
     console.error("Failed to send new blog email to:", email, "Error:", error.message);
