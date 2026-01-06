@@ -1,67 +1,23 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
-// Email transporter setup
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false, // true for 465, false for other ports
-  requireTLS: true,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  // Production-friendly settings
-  connectionTimeout: 10000, // 10 seconds
-  greetingTimeout: 10000,
-  socketTimeout: 10000,
-  // Pool settings for better performance
-  pool: true,
-  maxConnections: 5,
-  maxMessages: 10,
-  rateDelta: 1000,
-  rateLimit: 5
-});
+const resend = new Resend(process.env.RESEND_API_KEY);
 
-// Remove immediate verification - verify only when sending
-// This prevents startup errors in production environments
 
-// Helper function to send email with retry logic
-const sendEmailWithRetry = async (mailOptions, maxRetries = 3) => {
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      // Verify connection before sending (lazy verification)
-      if (attempt === 1) {
-        await transporter.verify();
-      }
-      
-      const info = await transporter.sendMail(mailOptions);
-      console.log(`Email sent successfully on attempt ${attempt}. Message ID:`, info.messageId);
-      return info;
-    } catch (error) {
-      console.error(`Email sending attempt ${attempt}/${maxRetries} failed:`, error.message);
-      
-      if (attempt === maxRetries) {
-        throw error;
-      }
-      
-      // Wait before retrying (exponential backoff)
-      const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
-      console.log(`Retrying in ${delay}ms...`);
-      await new Promise(resolve => setTimeout(resolve, delay));
-    }
-  }
-};
 
 // Send welcome email when user subscribes
 export const sendWelcomeEmail = async (email, name, unsubscribeToken) => {
   try {
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.error("Email credentials not configured");
-      return;
+    if (!process.env.RESEND_API_KEY) {
+      console.error("Resend API key not configured");
+      return null;
+    }
+    if (!process.env.EMAIL_FROM) {
+      console.error("EMAIL_FROM not configured");
+      return null;
     }
     const allBlogsUrl = `${process.env.FRONTEND_URL}/blogs`;
   const mailOptions = {
-    from: `"Nitai's Blogs" <${process.env.EMAIL_USER}>`,
+    from: process.env.EMAIL_FROM,
     to: email,
     subject: "🎉 Welcome to Nitai's Blogs!",
     html: `
@@ -172,12 +128,17 @@ export const sendWelcomeEmail = async (email, name, unsubscribeToken) => {
       `,
   };
 
-    const info = await sendEmailWithRetry(mailOptions);
-    console.log("Welcome email sent successfully to:", email);
-    return info;
+    const { data, error } = await resend.emails.send(mailOptions);
+    
+    if (error) {
+      console.error("Resend API error for welcome email to", email, ":", error);
+      return null;
+    }
+    
+    console.log("Welcome email sent successfully to:", email, "Message ID:", data?.id);
+    return data;
   } catch (error) {
-    console.error("Failed to send welcome email to:", email, "Error:", error.message);
-    // Don't throw error - let subscription succeed even if email fails
+    console.error("Failed to send welcome email to:", email, "Error:", error.message || error);
     return null;
   }
 };
@@ -185,14 +146,18 @@ export const sendWelcomeEmail = async (email, name, unsubscribeToken) => {
 // Send new blog notification to all subscribers
 export const sendNewBlogEmail = async (email, name, blogTitle, blogId, unsubscribeToken) => {
   try {
-    if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-      console.error("Email credentials not configured");
-      return;
+    if (!process.env.RESEND_API_KEY) {
+      console.error("Resend API key not configured");
+      return null;
+    }
+    if (!process.env.EMAIL_FROM) {
+      console.error("EMAIL_FROM not configured");
+      return null;
     }
   const blogUrl = `${process.env.FRONTEND_URL}/blog/${blogId}`;
 
   const mailOptions = {
-    from: `"Nitai's Blogs" <${process.env.EMAIL_USER}>`,
+    from: process.env.EMAIL_FROM,
     to: email,
     subject: `📰 New Blog Post: ${blogTitle}`,
     html: `
@@ -306,14 +271,18 @@ export const sendNewBlogEmail = async (email, name, blogTitle, blogId, unsubscri
     `,
   };
 
-    const info = await sendEmailWithRetry(mailOptions);
-    console.log("New blog email sent successfully to:", email);
-    return info;
+    const { data, error } = await resend.emails.send(mailOptions);
+    
+    if (error) {
+      console.error("Resend API error for new blog email to", email, ":", error);
+      return null;
+    }
+    
+    console.log("New blog email sent successfully to:", email, "Message ID:", data?.id);
+    return data;
   } catch (error) {
-    console.error("Failed to send new blog email to:", email, "Error:", error.message);
-    // Don't throw error - let blog publishing succeed even if email fails
+    console.error("Failed to send new blog email to:", email, "Error:", error.message || error);
     return null;
   }
 };
 
-export default transporter;
