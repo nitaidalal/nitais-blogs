@@ -130,14 +130,15 @@ export const addBlog = async (req, res) => {
     // Send email to subscribers if published
     if (isPublished) {
       const subscribers = await Subscriber.find({ isSubscribed: true });
-      subscribers.forEach(async (sub) => {
+      for (const sub of subscribers) {
         try {
           const unsubscribeToken = generateUnsubscribeToken(sub);
           await sendNewBlogEmail(sub.email, sub.name, title, newBlog._id, unsubscribeToken);
+          await new Promise(r => setTimeout(r, 1000)); // 1 second delay
         } catch (err) {
           console.error('Email send error:', err);
         }
-      });
+      }
     }
 
     res.status(201).json({ success: true, message: "Blog added successfully" });
@@ -163,14 +164,15 @@ export const togglePublish = async (req, res) => {
     if (blog.isPublished) {
 
       const subscribers = await Subscriber.find({ isSubscribed: true });
-      subscribers.forEach(async (sub) => {
+      for (const sub of subscribers) {
         try {
           const unsubscribeToken = generateUnsubscribeToken(sub);
           await sendNewBlogEmail(sub.email, sub.name, blog.title, blog._id, unsubscribeToken);
+          await new Promise(r => setTimeout(r, 1000)); // 1 second delay
         } catch (err) {
           console.error('Email send error:', err);
         }
-      });
+      }
     }
 
     res
