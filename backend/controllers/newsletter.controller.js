@@ -38,8 +38,10 @@ export const subscribe = async (req, res) => {
                 await existing.save();
 
                 // Send welcome email (non-blocking)
-                await sendWelcomeEmail(user.email, user.name, unsubscribedToken).catch(err => {
-                    console.error('Failed to send welcome email:', err);
+                sendWelcomeEmail(user.email, user.name, unsubscribedToken).catch(err => {
+                    console.error('❌ Failed to send welcome email to:', user.email);
+                    console.error('Error details:', err.message);
+                    console.error('Full error:', err);
                 });
 
                 return res.status(200).json({ 
@@ -60,8 +62,10 @@ export const subscribe = async (req, res) => {
         const unsubscribeToken = generateUnsubscribeToken(newSubscriber);
         
         // Send welcome email (non-blocking)
-        await sendWelcomeEmail(user.email, user.name, unsubscribeToken).catch(err => {
-            console.error('Failed to send welcome email:', err);
+        sendWelcomeEmail(user.email, user.name, unsubscribeToken).catch(err => {
+            console.error('❌ Failed to send welcome email to:', user.email);
+            console.error('Error details:', err.message);
+            console.error('Full error:', err);
         });
 
         res.status(201).json({ 
